@@ -77,6 +77,8 @@ app.post('/upload', (req, res) => {
  
     form.uploadDir = path.join(__dirname, '/upload');
     form.on('file', (field, file) => {
+    	// console.log(`field_____${field}_____`);
+    	// console.log(`dile_____${file}_____`);
     	fileName = file.name;
     	fs.renameSync(file.path, path.join(form.uploadDir, file.name));
     });
@@ -100,6 +102,8 @@ function parseDigitalInvoice(filePath, res) {
 
 	let lines = input.split('\n').filter(Boolean); // Removing empty lines and spliting each lines into array
 	// console.log(lines);
+	// console.log(lines.length);
+
 
 	// Format: line1 + line2 + line3
 	let digits = [
@@ -119,13 +123,20 @@ function parseDigitalInvoice(filePath, res) {
 
 	for (let i = 0; i < lines.length; i += 3)
 	{
-	    let num = 0;
+	    let num = '';
 	    
 	    //For all 27 charecters in a line 
 	    for (let j = 0; j < 27; j += 3)
 	    {
 	        let char = lines[i].substr(j, 3) + lines[i + 1].substr(j, 3) + lines[i + 2].substr(j, 3);
-	        num = num * 10 + digits.indexOf(char);
+	        if(digits.indexOf(char) != -1){
+	        	num = num +''+ digits.indexOf(char);
+	        }else{
+	        	 num = num+''+'?';
+	        }
+	        
+	        
+	        // console.log('********************************',(num));
 	    }
 	    result.push(num);
 	}
@@ -133,6 +144,7 @@ function parseDigitalInvoice(filePath, res) {
 	    return a + '\r\n' + b;
 	});
 	console.log(fileData);
+	// console.log(fileData.length);
 
 	fs.writeFile(__dirname +'/output_user_story_1.txt', fileData, function (err) {
 	  if (err) throw err;
